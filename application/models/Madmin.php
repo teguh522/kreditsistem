@@ -61,6 +61,17 @@ class Madmin extends CI_Model
         }
         return null;
     }
+    function get_data_row($coloum, $where, $tabel, $tabel2, $tabel3, $join, $join2)
+    {
+        $this->db->join($tabel2, $join);
+        $this->db->join($tabel3, $join2);
+        $this->db->where($coloum, $where);
+        $data = $this->db->get($tabel);
+        if ($data->num_rows() > 0) {
+            return $data->row();
+        }
+        return null;
+    }
     function get_data_join_strusers($coloum, $where, $tabel, $tabel2, $join, $orderby, $conf)
     {
         $this->db->join($tabel2, $join);
@@ -107,15 +118,7 @@ class Madmin extends CI_Model
         }
         return null;
     }
-    function get_data_last($tabel)
-    {
-        $this->db->order_by('id_laporan_tugas', 'DESC');
-        $data = $this->db->get($tabel, 1);
-        if ($data->num_rows() > 0) {
-            return $data->row();
-        }
-        return null;
-    }
+
     function get_twojoin($samecoloum, $tabel1, $tabel2)
     {
         $this->db->join($tabel2, $samecoloum);

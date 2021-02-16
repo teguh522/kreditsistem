@@ -22,7 +22,15 @@ class Paneladmin extends CI_Controller
 		$func = $this->input->get('func');
 		$id_row = $this->input->get('id');
 		if ($func == 'updatekredit') {
-			$data['getrow'] = $this->Madmin->get_data('id_kredit', $id_row, 'kredit');
+			$data['getrow'] = $this->Madmin->get_data_row(
+				'id_kredit',
+				$id_row,
+				'kredit',
+				'mbarang',
+				'mpelanggan',
+				'kredit.id_barang=mbarang.id_barang',
+				'kredit.id_pelanggan=mpelanggan.id_pelanggan',
+			);
 			$data['action'] = base_url('paneladmin/update_kredit');
 		} else {
 			$data['action'] = base_url('paneladmin/create_kredit');
@@ -53,6 +61,21 @@ class Paneladmin extends CI_Controller
 		);
 		$this->Madmin->create_data('kredit', $data);
 		$this->session->set_flashdata('msg', 'Berhasil Tersimpan!');
+		redirect('paneladmin/tambahkredit');
+	}
+	function update_kredit()
+	{
+		$id = $this->input->post('id_kredit');
+		$data = array(
+			'id_pelanggan' => $this->input->post('id_pelanggan'),
+			'id_barang' => $this->input->post('id_barang'),
+			'harga_jual' => $this->input->post('harga_jual'),
+			'tenor' => $this->input->post('tenor'),
+			'jatuh_tempo' => $this->input->post('jatuh_tempo'),
+			'tgl_tagihan' => $this->input->post('tgl_tagihan'),
+		);
+		$this->Madmin->update_data('id_kredit', $id, $data, 'kredit');
+		$this->session->set_flashdata('msg', 'Berhasil Terupdate!');
 		redirect('paneladmin/tambahkredit');
 	}
 	public function get_penerima()

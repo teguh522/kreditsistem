@@ -16,17 +16,21 @@
                     <div class="body">
                         <div id="form-hidden">
                             <form id="basic-form" autocomplete="off" method="post" enctype="multipart/form-data" action="<?php if (isset($action)) echo $action ?>" novalidate>
-                                <input type="hidden" name="id_barang" value="<?php if (isset($getrow)) echo $getrow->id_barang ?>">
+                                <input type="hidden" name="id_kredit" value="<?php if (isset($getrow)) echo $getrow->id_kredit ?>">
                                 <div class="form-group">
                                     <label>Nama Pelanggan</label>
                                     <select id="cari-pelanggan" class="js-example-basic-multiple" name="id_pelanggan" required>
-
+                                        <?php if (isset($getrow)) : ?>
+                                            <option value="<?= $getrow->id_pelanggan ?>" selected><?= $getrow->nama_pel ?></option>
+                                        <?php endif ?>
                                     </select>
                                 </div>
                                 <div class="form-group">
                                     <label>Barang</label>
                                     <select id="cari-barang" class="js-example-basic-multiple" name="id_barang" required>
-
+                                        <?php if (isset($getrow)) : ?>
+                                            <option value="<?= $getrow->id_barang ?>" selected><?= $getrow->nama_barang ?></option>
+                                        <?php endif ?>
                                     </select>
                                 </div>
                                 <div class="form-group">
