@@ -258,158 +258,6 @@
 
 
       }
-
-      $('.kirimsaldo').click(function() {
-          const customer_id = $(this).data("id");
-          const amount = $(this).data("saldo");
-          const id_user_tugas = $(this).data("id_user_tugas");
-          Swal.fire({
-              title: 'Are you sure?',
-              text: "Saldo user ini akan di kirim ke olshop.id",
-              icon: 'warning',
-              input: 'radio',
-              inputOptions: {
-                  0: 'Saldo',
-                  1: 'Penghasilan'
-              },
-              inputValidator: (value) => {
-                  if (!value) {
-                      return 'You need to choose something!'
-                  }
-              },
-
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Confirm'
-          }).then((result) => {
-              if (result.isConfirmed) {
-                  $.ajax({
-                      url: '<?= base_url('paneladmin/post_saldo') ?>',
-                      method: 'post',
-                      cache: false,
-                      dataType: 'json',
-                      data: {
-                          customer_id,
-                          amount,
-                          id_user_tugas,
-                          earning: result.value
-                      },
-                      success: function(data) {
-                          if (data.status) {
-                              Swal.fire({
-                                  text: data.message,
-                                  icon: 'success',
-                                  toast: true,
-                                  position: 'top-end',
-                                  showConfirmButton: false,
-                                  timer: 3000,
-                              })
-                              $(`#kirimsaldo${id_user_tugas}`).hide();
-                          } else {
-                              Swal.fire({
-                                  text: data.message,
-                                  icon: 'error',
-                                  toast: true,
-                                  position: 'top-end',
-                                  showConfirmButton: false,
-                                  timer: 3000,
-                              })
-                          }
-
-                      },
-                      error: function(xhr, ajaxOptions, thrownError) {
-                          Swal.fire({
-                              text: "Error koneksi",
-                              icon: 'error',
-                              toast: true,
-                              position: 'top-end',
-                              showConfirmButton: false,
-                              timer: 3000,
-                          })
-                      }
-                  })
-
-              }
-          })
-      })
-      $('.broadcastwa').click(function() {
-          const akuntype = $(this).data("id");
-          const idtugas = $(this).data("id-tugas");
-          Swal.fire({
-              title: 'Are you sure?',
-              text: 'Notifikasi akan di kirim ke seluruh akun group ini',
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#d33',
-              confirmButtonText: 'Confirm'
-          }).then((result) => {
-              if (result.isConfirmed) {
-                  $.ajax({
-                      url: '<?= base_url('paneladmin/getuserbytype') ?>',
-                      method: 'post',
-                      cache: false,
-                      dataType: 'json',
-                      data: {
-                          id: akuntype,
-                          idtugas,
-                      },
-                      success: function(data) {
-
-                          if (data.status) {
-                              let hp = [];
-                              data.data.map(item => {
-                                  hp.push(item.telephone)
-                              })
-                              $.ajax({
-                                  url: '<?= base_url('paneladmin/broadcastwa') ?>',
-                                  method: 'post',
-                                  cache: false,
-                                  dataType: 'json',
-                                  data: {
-                                      hp,
-                                  },
-                                  success: function(data) {
-                                      Swal.fire({
-                                          text: "Berhasil",
-                                          icon: 'success',
-                                          toast: true,
-                                          position: 'top-end',
-                                          showConfirmButton: false,
-                                          timer: 3000,
-                                      })
-                                      window.location.href = '<?= base_url('paneladmin') ?>'
-                                  }
-                              })
-
-                          } else {
-                              Swal.fire({
-                                  text: data.message,
-                                  icon: 'error',
-                                  toast: true,
-                                  position: 'top-end',
-                                  showConfirmButton: false,
-                                  timer: 3000,
-                              })
-                          }
-
-                      },
-                      error: function(xhr, ajaxOptions, thrownError) {
-                          Swal.fire({
-                              text: "Error koneksi",
-                              icon: 'error',
-                              toast: true,
-                              position: 'top-end',
-                              showConfirmButton: false,
-                              timer: 3000,
-                          })
-                      }
-                  })
-
-              }
-          })
-      })
   </script>
 
   <script>
@@ -426,16 +274,66 @@
               e.preventDefault();
               $('#form-hidden').show('slow');
           });
+          $('#cari-pelanggan').select2({
+              width: '100%',
+              minimumInputLength: 2,
+              ajax: {
+                  type: "GET",
+                  dataType: "json",
+                  cache: false,
+                  url: '<?= base_url() ?>paneladmin/get_penerima',
+                  data: function(params) {
+                      var query = {
+                          param: params.term.replace(/ /g, " "),
+                      }
+                      return query;
+                  },
+                  processResults: function(data) {
+                      return {
+                          results: $.map(data, function(item) {
+                              return {
+                                  text: `${item.nama_pel} | ${item.no_ktp}`,
+                                  id: item.id_pelanggan
+                              }
+                          })
+                      };
+                  }
+              }
+          });
+          $('#cari-barang').select2({
+              width: '100%',
+              minimumInputLength: 2,
+              ajax: {
+                  type: "GET",
+                  dataType: "json",
+                  cache: false,
+                  url: '<?= base_url() ?>paneladmin/get_barang',
+                  data: function(params) {
+                      var query = {
+                          param: params.term.replace(/ /g, " "),
+                      }
+                      return query;
+                  },
+                  processResults: function(data) {
+                      return {
+                          results: $.map(data, function(item) {
+                              return {
+                                  text: `${item.nama_barang} | ${item.hpp}`,
+                                  id: item.id_barang
+                              }
+                          })
+                      };
+                  }
+              }
+          });
+          $('#cari-barang').on('select2:select', function(e) {
+              const data = e.params.data;
+              const text = data.text.split('|')
+              const hpp = text[1];
+              $("#hpp").val(hpp)
+          });
+
           $('#summernote').summernote({
-              //   toolbar: [
-              //       ['style', ['bold', 'italic', 'underline', 'clear']],
-              //       ['font', ['strikethrough', 'superscript', 'subscript']],
-              //       ['fontsize', ['fontsize']],
-              //       ['color', ['color']],
-              //       ['para', ['ul', 'ol', 'paragraph']],
-              //       ['height', ['height']],
-              //   ],
-              //   placeholder: 'Kualifikasi Loker',
               tabsize: 2,
               height: 230
           });
@@ -449,96 +347,7 @@
           })
 
 
-          const nextid = $('#next_id').val();
-          $("#myupload").dropzone({
-              url: "<?= base_url() ?>panelpromotor/proses_upload_multiple",
-              acceptedFiles: 'image/*',
-              paramName: "userimg",
-              maxFilesize: 4,
-              method: "post",
-              addRemoveLinks: true,
-              sending: function(a, b, c) {
-                  a.token = Math.random();
-                  a.id_laporan = nextid;
-                  c.append("token_foto", a.token);
-                  c.append("id_laporan_kerja", a.id_laporan);
-              },
-              removedfile: function(file) {
-                  const token = file.token;
-                  $.ajax({
-                      type: "post",
-                      data: {
-                          token: token
-                      },
-                      url: "<?php echo base_url('panelpromotor/remove_foto') ?>",
-                      cache: false,
-                      dataType: 'json',
-                      success: function() {
-                          console.log("Foto terhapus");
-                      },
-                      error: function(xhr, status, error) {
-                          console.log(error);
 
-                      }
-                  });
-                  let _ref;
-                  return (_ref = file.previewElement) != null ? _ref.parentNode.removeChild(file.previewElement) : void 0;
-              }
-          });
-
-          const api_url = "<?= base_url() ?>dashboard/get_laporan_saldo";
-          async function chartbar() {
-              try {
-                  const response = await fetch(api_url);
-                  const json = await response.text();
-                  if (json.length > 0) {
-                      let kategori = [];
-                      let data = ['data1'];
-                      JSON.parse(json).map((item) => {
-                          kategori.push(`Bulan Ke ${item.bulan}`)
-                          data.push(item.totalpengeluaran)
-                      })
-                      var chart = c3.generate({
-
-                          bindto: '#chart-bar', // id of chart wrapper
-                          data: {
-                              columns: [
-                                  // each columns data
-                                  data,
-                              ],
-                              type: 'line', // default type of chart
-                              colors: {
-                                  'data1': '#007FFF', // blue            
-                              },
-                              names: {
-                                  // name of each serie
-                                  'data1': 'Pengeluaran',
-                              }
-                          },
-                          axis: {
-                              x: {
-                                  type: 'category',
-                                  // name of each category
-                                  categories: kategori
-                              },
-                          },
-                          bar: {
-                              width: 16
-                          },
-                          legend: {
-                              show: true, //hide legend
-                          },
-                          padding: {
-                              bottom: 20,
-                              top: 0
-                          },
-                      });
-                  }
-              } catch (error) {
-                  console.log(error);
-              }
-          }
-          chartbar()
       });
   </script>
   </body>

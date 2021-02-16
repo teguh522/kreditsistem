@@ -34,7 +34,7 @@
                                     <input type="file" name="foto" class="dropify" value="<?php if (isset($getrow)) echo $getrow->foto ?>" data-default-file="<?php if (isset($getrow)) echo base_url('upload/foto/' . $getrow->foto) ?>" data-allowed-file-extensions="jpg jpeg png" data-max-file-size="500K">
                                 </div>
                                 <button type="submit" class="btn btn-primary"><?php echo (isset($getrow)) ? 'Edit' : 'Simpan'; ?></button>
-                                <a href="<?php echo base_url('paneladmin') ?>" class="btn btn-primary">Batal</a>
+                                <a href="<?php echo base_url('paneladmin/barang') ?>" class="btn btn-primary">Batal</a>
                             </form>
                         </div>
                         <a href="#" id="btntambah" class="btn btn-primary pull-right">Tambah</a>

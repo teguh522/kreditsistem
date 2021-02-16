@@ -30,6 +30,16 @@ class Madmin extends CI_Model
         }
         return null;
     }
+    function getpenerima($tabel, $coloum, $where)
+    {
+        $this->db->select('*');
+        $this->db->like($coloum, $where);
+        $data = $this->db->get($tabel);
+        if ($data->num_rows() > 0) {
+            return $data->result();
+        }
+        return null;
+    }
     function get_data_all($tabel, $orderby, $conf)
     {
         $this->db->order_by($orderby, $conf);
@@ -40,10 +50,11 @@ class Madmin extends CI_Model
         return null;
     }
 
-    function get_data_join_str($coloum, $where, $tabel, $tabel2, $join)
+    function get_data_join3($tabel, $tabel2, $tabel3, $join, $join2, $orderby, $conf)
     {
         $this->db->join($tabel2, $join);
-        $this->db->where($coloum, $where);
+        $this->db->join($tabel3, $join2);
+        $this->db->order_by($orderby, $conf);
         $data = $this->db->get($tabel);
         if ($data->num_rows() > 0) {
             return $data->result();

@@ -27,11 +27,45 @@ class Paneladmin extends CI_Controller
 		} else {
 			$data['action'] = base_url('paneladmin/create_kredit');
 		}
-		$data['hasil'] = $this->Madmin->get_data_all('kredit', 'id_kredit', 'DESC');
+		$data['hasil'] = $this->Madmin->get_data_join3(
+			'kredit',
+			'mbarang',
+			'mpelanggan',
+			'kredit.id_barang=mbarang.id_barang',
+			'kredit.id_pelanggan=mpelanggan.id_pelanggan',
+			'id_kredit',
+			'DESC'
+		);
 		$this->load->view('vheader');
 		$this->load->view('vmenu');
 		$this->load->view('admin/vkredit', $data);
 		$this->load->view('vfooter');
+	}
+	function create_kredit()
+	{
+		$data = array(
+			'id_pelanggan' => $this->input->post('id_pelanggan'),
+			'id_barang' => $this->input->post('id_barang'),
+			'harga_jual' => $this->input->post('harga_jual'),
+			'tenor' => $this->input->post('tenor'),
+			'jatuh_tempo' => $this->input->post('jatuh_tempo'),
+			'tgl_tagihan' => $this->input->post('tgl_tagihan'),
+		);
+		$this->Madmin->create_data('kredit', $data);
+		$this->session->set_flashdata('msg', 'Berhasil Tersimpan!');
+		redirect('paneladmin/tambahkredit');
+	}
+	public function get_penerima()
+	{
+		$param = $this->input->get('param');
+		$data = $this->Madmin->getpenerima('mpelanggan', 'nama_pel', $param);
+		echo json_encode($data);
+	}
+	public function get_barang()
+	{
+		$param = $this->input->get('param');
+		$data = $this->Madmin->getpenerima('mbarang', 'nama_barang', $param);
+		echo json_encode($data);
 	}
 
 	function barang()
@@ -174,6 +208,10 @@ class Paneladmin extends CI_Controller
 			$this->Madmin->delete('id_barang', $id, 'mbarang');
 			$this->session->set_flashdata('msg', 'Terhapus!');
 			redirect('paneladmin/barang');
+		} else if ($func == 'kredit') {
+			$this->Madmin->delete('id_kredit', $id, 'kredit');
+			$this->session->set_flashdata('msg', 'Terhapus!');
+			redirect('paneladmin/tambahkredit');
 		}
 	}
 
