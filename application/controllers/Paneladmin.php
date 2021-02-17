@@ -16,6 +16,37 @@ class Paneladmin extends CI_Controller
 			redirect('panelpromotor', 'refresh');
 		}
 	}
+	function angsuran()
+	{
+		$data['hasil'] = $this->Madmin->get_data_join4(
+			'kredit',
+			'mbarang',
+			'mpelanggan',
+			'totalangsuran'
+		);
+		$this->load->view('vheader');
+		$this->load->view('vmenu');
+		$this->load->view('admin/vangsuran', $data);
+		$this->load->view('vfooter');
+	}
+
+	function create_angsuran()
+	{
+		$id = $this->input->post('id_kredit');
+		$nominal = $this->input->post('jumlah_angsuran');
+		$data = array(
+			'id_kredit' => $id,
+			'jumlah_angsuran' => $nominal,
+		);
+		$this->Madmin->create_data('angsuran', $data);
+		echo json_encode("");
+	}
+	function getangsuran()
+	{
+		$param = $this->input->post('id');
+		$data = $this->Madmin->get_data_allarray('id_kredit', $param, 'angsuran');
+		echo json_encode($data);
+	}
 
 	function tambahkredit()
 	{

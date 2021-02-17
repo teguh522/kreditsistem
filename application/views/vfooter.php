@@ -345,7 +345,48 @@
                   x.type = "password";
               }
           })
-
+          $('#bayarangsuranmodal').on('show.bs.modal', function(e) {
+              let id = $(e.relatedTarget).data('id-kredit');
+              $.ajax({
+                  type: "post",
+                  url: "<?= base_url('/paneladmin/getangsuran') ?>",
+                  cache: false,
+                  dataType: "json",
+                  data: {
+                      id
+                  },
+                  success: function(data) {
+                      $('div').remove('#detailjawaban')
+                      data.map((item, index) => {
+                          $("#jawabaninterview").append(`
+                                <div id='detailjawaban'>
+                                <label><b> Angsuran Ke: ${index+1}</b></label><br>
+                                <label>Tanggal : ${item.created_at}</label><br>
+                                <label>Nominal : ${new Intl.NumberFormat('ID', { style: 'currency', currency: 'IDR' }).format(item.jumlah_angsuran)}</label>
+                            `)
+                      })
+                  }
+              })
+              $(e.currentTarget).find('#tampilid').val(id);
+          });
+          $('#btnsimpanjwb').on('click', function() {
+              $.ajax({
+                  type: "POST",
+                  url: "<?= base_url('/paneladmin/create_angsuran') ?>",
+                  data: {
+                      'id_kredit': $('#tampilid').val(),
+                      'jumlah_angsuran': $('#jumlah_angsuran').val(),
+                  },
+                  cache: false,
+                  success: function(data) {
+                      $('#bayarangsuranmodal').modal('toggle')
+                      window.location = "<?= base_url('paneladmin/angsuran') ?>"
+                  },
+                  error: function() {
+                      alert('Gagal simpan data');
+                  }
+              });
+          })
 
 
       });

@@ -61,6 +61,18 @@ class Madmin extends CI_Model
         }
         return null;
     }
+    function get_data_join4($tabel, $tabel2, $tabel3, $tabel4)
+    {
+        $data = $this->db->query("SELECT a.*,b.*,c.*,d.total_angsuran from $tabel as a left join $tabel2 as b 
+        on a.id_barang=b.id_barang Left join $tabel3 as c on a.id_pelanggan=c.id_pelanggan
+        left join $tabel4 as d on a.id_kredit=d.id_kredit
+        order by a.id_kredit DESC
+        ");
+        if ($data->num_rows() > 0) {
+            return $data->result();
+        }
+        return null;
+    }
     function get_data_row($coloum, $where, $tabel, $tabel2, $tabel3, $join, $join2)
     {
         $this->db->join($tabel2, $join);
