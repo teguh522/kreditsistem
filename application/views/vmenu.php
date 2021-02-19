@@ -67,8 +67,8 @@
                         <li><a href="<?php echo base_url() ?>panelpromotor/historitugas"><i class="icon-notebook"></i><span>History Tugas</span></a></li>
                     <?php } else { ?>
                         <li><a href="<?php echo base_url() ?>dashboard"><i class="icon-home"></i><span>Dashboard</span></a></li>
-                        <li><a href="<?php echo base_url() ?>paneladmin/tambahkredit"><i class="icon-check"></i><span>Tambah Kredit</span></a></li>
                         <li><a href="<?php echo base_url() ?>paneladmin/angsuran"><i class="icon-tag"></i><span>Angsuran</span></a></li>
+                        <li><a href="<?php echo base_url() ?>paneladmin/tambahkredit"><i class="icon-check"></i><span>Tambah Kredit</span></a></li>
                         <li><a href="<?php echo base_url() ?>paneladmin/pelanggan"><i class="icon-users"></i><span>Pelanggan</span></a></li>
                         <li><a href="<?php echo base_url() ?>paneladmin/barang"><i class="icon-tag"></i><span>Barang</span></a></li>
                         <li><a href="<?php echo base_url() ?>paneladmin/laporan"><i class="icon-list"></i><span>Laporan</span></a></li>

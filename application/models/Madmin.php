@@ -73,6 +73,17 @@ class Madmin extends CI_Model
         }
         return null;
     }
+    function get_barang_kredit()
+    {
+        $data = $this->db->query("SELECT a.id_barang,a.nama_barang,COUNT(b.id_barang)as jumlahkredit 
+        FROM mbarang as a LEFT join kredit as b on a.id_barang=b.id_barang
+        GROUP by a.id_barang ORDER BY a.id_barang DESC LIMIT 10
+        ");
+        if ($data->num_rows() > 0) {
+            return $data->result();
+        }
+        return null;
+    }
     function get_data_row($coloum, $where, $tabel, $tabel2, $tabel3, $join, $join2)
     {
         $this->db->join($tabel2, $join);

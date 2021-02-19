@@ -18,14 +18,16 @@ class Dashboard extends CI_Controller
 
     public function index()
     {
+        $data['pelanggan'] = $this->Madmin->get_data_all('mpelanggan', 'id_pelanggan', 'DESC');
+        $data['barang'] = $this->Madmin->get_data_all('mbarang', 'id_barang', 'DESC');
         $this->load->view('vheader');
         $this->load->view('vmenu');
-        $this->load->view('admin/vdashboard');
+        $this->load->view('admin/vdashboard', $data);
         $this->load->view('vfooter');
     }
-    public function get_laporan_saldo()
+    public function get_laporan_kredit()
     {
-        $data = $this->Madmin->get_laporan_earning(date('Y'));
+        $data = $this->Madmin->get_barang_kredit();
         echo json_encode($data);
     }
 }
