@@ -16,6 +16,30 @@ class Paneladmin extends CI_Controller
 			redirect('panelpromotor', 'refresh');
 		}
 	}
+	function laporan()
+	{
+		$data['action'] = base_url('paneladmin/cari_laporan_action');
+		$this->load->view('vheader');
+		$this->load->view('vmenu');
+		$this->load->view('admin/vcarilaporan', $data);
+		$this->load->view('vfooter');
+	}
+	function cari_laporan_action()
+	{
+		$id_barang = $this->input->get('id_barang');
+		$data['hasil'] = $this->Madmin->get_data_join4where(
+			'kredit',
+			'mbarang',
+			'mpelanggan',
+			'totalangsuran',
+			'id_barang',
+			$id_barang
+		);
+		$this->load->view('vheader');
+		$this->load->view('vmenu');
+		$this->load->view('admin/vtampildata', $data);
+		$this->load->view('vfooter');
+	}
 	function angsuran()
 	{
 		$data['hasil'] = $this->Madmin->get_data_join4(
@@ -282,71 +306,6 @@ class Paneladmin extends CI_Controller
 		}
 		print_r($this->upload->display_errors());
 	}
-	public function update_tugas()
-	{
-		$id_tugas = $this->input->post('id_tugas');
-		$file = 'img_admin_' . date('his');
-		$this->upload_file('file_upload', $file);
-		if (!empty($_FILES["file_upload"]["name"])) {
-			$file = $this->upload->data("file_name");
-		} else {
-			$file = $this->input->post('img');
-		}
-		$data = array(
-			'nama_tugas' => $this->input->post('nama_tugas'),
-			'kategori_tugas' => $this->input->post('kategori_tugas'),
-			'nilai_nominal' => $this->input->post('nominal'),
-			'deskripsi' => $this->input->post('deskripsi'),
-			'link' => $this->input->post('link'),
-			'upload_image' => $file,
-			'target' => $this->input->post('target_tugas'),
-			'tgl_awal' => $this->input->post('tgl_awal'),
-			'tgl_akhir' => $this->input->post('tgl_akhir'),
-		);
-		$this->Madmin->update_data('id_create_tugas', $id_tugas, $data, 'frm_create_tugas');
-		$this->session->set_flashdata('msg', 'Berhasil Terupdate!');
-		redirect('paneladmin');
-	}
-
-	public function get_profile_customer()
-	{
-		$customer_id = $this->input->post('id');
-		$hasil = $this->post_http_formdata('https://api.olshop.id/v1/customer/info', ['customer_id' => $customer_id]);
-		echo $hasil;
-	}
-	function post_saldo()
-	{
-		$id_usr_tugas = $this->input->post('id_user_tugas');
-		$customer_id = $this->input->post('customer_id');
-		$saldo = $this->input->post('amount');
-		$earning = $this->input->post('earning');
-		$data = array(
-			'customer_id' => $customer_id,
-			'order_id' => 0,
-			'description' => "Penambahan dari promotor system",
-			'amount' => $saldo,
-			'earning' => $earning,
-			'sumber' => 'admin_add_transaction'
-		);
-		$hasil = $this->post_http_formdata('https://api.olshop.id/v1/transaction/store/balance', $data);
-		$row = json_decode($hasil);
-		$status = $row->status;
-		if ($status) {
-			$this->Madmin->update_data('id_user_tugas', $id_usr_tugas, ['kirim_saldo' => 1], 'frm_usr_tugas');
-			echo json_encode($row);
-		} else {
-			echo json_encode($row);
-		}
-	}
-
-	public function getuserbytype()
-	{
-		$id = $this->input->post('id');
-		$idtugas = $this->input->post('idtugas');
-		$this->Madmin->update_data('id_create_tugas', $idtugas, ['is_broadcast' => 1], 'frm_create_tugas');
-		$hasil = $this->post_http_formdata('https://api.olshop.id/v1/customer/by/group', ['customer_group_id' => $id]);
-		echo $hasil;
-	}
 
 	public function post_http_formdata($json_url, $data)
 	{
@@ -366,84 +325,6 @@ class Paneladmin extends CI_Controller
 		return $result;
 	}
 
-	public function detailverif()
-	{
-		$id = $this->input->get('id');
-		$data['hasil'] = $this->Madmin->get_data_allarray(
-			'id_usr_tugas',
-			$id,
-			'frm_usr_laporan'
-		);
-		if ($data['hasil'] != null) {
-			$id_auth = $data['hasil'][0]->id_auth;
-			$infouser = $this->post_http_formdata('https://api.olshop.id/v1/customer/info', ['customer_id' => $id_auth]);
-			$data['userinfo'] = json_decode($infouser);
-		} else {
-			$data['userinfo'] = '';
-		}
-
-		$data['action'] = base_url('paneladmin/update_status');
-		$this->load->view('vheader');
-		$this->load->view('vmenu');
-		$this->load->view('admin/vdetailverif', $data);
-		$this->load->view('vfooter');
-	}
-
-	public function getimagedetail()
-	{
-		$id = $this->input->post('id');
-		$data['gambar'] = $this->Madmin->get_data_allarray(
-			'id_laporan',
-			$id,
-			'usr_image'
-		);
-		echo json_encode($data);
-	}
-	public function getlistimgadmin()
-	{
-		$id = $this->input->post('id');
-		$data['gambar'] = $this->Madmin->get_data_allarray(
-			'id_tugas',
-			$id,
-			'admin_image'
-		);
-		echo json_encode($data);
-	}
-	public function proses_upload_multiple()
-	{
-		$file = 'img_tugas_' . date('his');
-		$this->upload_file('adminimg', $file);
-		$token = $this->input->post('token_foto');
-		$id_tugas = $this->input->post('id_tugas');
-		$nama = $this->upload->data('file_name');
-		$data = array(
-			'id_tugas' => $id_tugas,
-			'token' => $token,
-			'file' => $nama,
-		);
-		$this->Madmin->create_data('admin_image', $data);
-	}
-	function remove_foto()
-	{
-		$token = $this->input->post('token');
-		$foto = $this->Madmin->get_data('token', $token, 'admin_image');
-		$nama_foto = $foto->file;
-		if (file_exists($file = './upload/foto/' . $nama_foto)) {
-			unlink($file);
-		}
-		$this->Madmin->delete('token', $token, 'admin_image');
-		echo "{}";
-	}
-	public function getlaporandetail()
-	{
-		$id = $this->input->post('id');
-		$data['data'] = $this->Madmin->get_data_allarray(
-			'id_usr_tugas',
-			$id,
-			'frm_usr_laporan'
-		);
-		echo json_encode($data);
-	}
 
 	public function update_status()
 	{
@@ -527,59 +408,6 @@ class Paneladmin extends CI_Controller
 
 		$this->session->set_flashdata('msg', 'Berhasil Terverifikasi!');
 		redirect('paneladmin/verifikasitugas');
-	}
-
-	public function broadcastwa()
-	{
-		$nohp = $this->input->post('hp');
-		$pesan = "
-		Informasi tugas baru dari promotor.olshop.id,
-		silahkan masuk untuk melihat deskripsi
-		";
-		foreach ($nohp as $val) {
-			$this->kirimPesan($pesan, $val, "Boot Promotor");
-		}
-		echo json_encode("");
-	}
-
-	public function create_tugas()
-	{
-		$file = 'img_admin_' . date('his');
-		$this->upload_file('file_upload', $file);
-		if (!empty($_FILES["file_upload"]["name"])) {
-			$file = $this->upload->data("file_name");
-		} else {
-			$file = '';
-		}
-		$target = $this->input->post('target_tugas');
-		$data = array(
-			'nama_tugas' => $this->input->post('nama_tugas'),
-			'kategori_tugas' => $this->input->post('kategori_tugas'),
-			'nilai_nominal' => $this->input->post('nominal'),
-			'deskripsi' => $this->input->post('deskripsi'),
-			'link' => $this->input->post('link'),
-			'upload_image' => $file,
-			'target' => $target,
-			'tgl_awal' => $this->input->post('tgl_awal'),
-			'tgl_akhir' => $this->input->post('tgl_akhir'),
-		);
-		$this->Madmin->create_data('frm_create_tugas', $data);
-		$this->session->set_flashdata('msg', 'Berhasil Tersimpan!');
-		redirect('paneladmin');
-	}
-
-	public function upload_file($name, $file)
-	{
-		$config['upload_path'] = './upload/foto/';
-		$config['allowed_types'] = 'gif|jpg|png|ico|jpeg';
-		$config['file_name'] = $file;
-		$config['overwrite'] = true;
-		$config['max_size'] = 4000;
-		$this->load->library('upload', $config);
-		if ($this->upload->do_upload($name)) {
-			return $this->upload->data("file_name");
-		}
-		print_r($this->upload->display_errors());
 	}
 
 	function kirimPesan($pesan, $no_hp, $nama)
